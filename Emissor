@@ -1,0 +1,44 @@
+const int ledPin=13;
+
+
+void setup() 
+{
+  pinMode(ledPin, OUTPUT);
+  Serial.begin(9600);
+  while (!Serial) {}
+  Serial.flush();
+}
+
+void loop() 
+{
+  delay(100);
+  if(Serial.available()>0)
+  {
+    digitalWrite(ledPin, HIGH);
+    delay(1000);
+    digitalWrite(ledPin, LOW);
+    Serial.print("sync:\n");
+  }
+  while(Serial.available()>0)
+  {
+    int incomingChar = Serial.read();
+    if (incomingChar >64 || incomingChar == 32)
+    {
+      Serial.print(incomingChar, BIN);
+      Serial.print('\n');
+      int arrayLetra[7];
+      for (int i = 6; i >= 0; i--) 
+      {
+        arrayLetra[i] = incomingChar % 2;
+        incomingChar = incomingChar / 2;
+      }
+      for(int i=0;i<7;i++) 
+      {
+        if(arrayLetra[i]==1){digitalWrite(ledPin, HIGH);}
+        else{digitalWrite(ledPin, LOW);}
+        delay(1000/7);
+      }
+      digitalWrite(ledPin, LOW);
+    }
+  }
+}
