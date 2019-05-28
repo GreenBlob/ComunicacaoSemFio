@@ -1,0 +1,82 @@
+const int sensorPin = A0;
+bool desligador=1, estadoPassado=0, recebido[7];
+
+bool sincronizador();
+bool conversorAnalogDig();
+void decodificador();
+void conversorBinChar();
+void teste();
+
+void setup() 
+{
+    pinMode(sensorPin, INPUT);
+    Serial.begin(9600);
+
+}
+
+void loop() 
+{
+  while(sincronizador())
+  {
+    decodificador();
+    conversorBinChar();    
+  }
+}
+
+bool sincronizador()
+{
+  if(!estadoPassado)
+  {
+    if(conversorAnalogDig())
+    {
+      delay(500);
+      if(conversorAnalogDig()){
+        delay(500+(1000/14));
+        desligador=0;
+        estadoPassado=1;
+        return 1;
+      }
+      else{estadoPassado=0;return 0;}
+    }
+    else{estadoPassado=0;return 0;}
+  }
+  else
+  {
+    if(desligador){estadoPassado=0;return 0;}
+    else{estadoPassado=1;return 1;}
+  }
+estadoPassado=0;return 0;
+}
+bool conversorAnalogDig(){
+    int sensorValue = analogRead(sensorPin);
+    int luzAmbiente = 100;
+    sensorValue = sensorValue - luzAmbiente
+    bool dig;
+    if(sensorValue > 0 ){dig = 1;}
+    if(sensorValue <= 0 ){dig = 0;}
+    return dig;
+}
+void decodificador()
+{
+  int soma=0;
+  for(int i=0;i<7;i++){
+    recebido[i]=conversorAnalogDig();
+    soma=soma+recebido[i];
+    delay(1000/7);    
+  }
+  if(soma==0){desligador=1;}
+}
+void conversorBinChar()
+{
+  for(int i=0;i<7;i++){
+    Serial.print(recebido[i]);
+  }
+Serial.print('\n');
+}
+
+void teste()
+{
+  int sensorValue = analogRead(sensorPin);
+  Serial.print(sensorValue);
+  Serial.print('\n');
+}
