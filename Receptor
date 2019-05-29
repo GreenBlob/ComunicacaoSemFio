@@ -1,5 +1,7 @@
 const int sensorPin = A0;
 bool desligador=1, estadoPassado=0, recebido[7];
+int msPorBit = 100;
+int luzAmbiente = 140;
 
 bool sincronizador();
 bool conversorAnalogDig();
@@ -11,7 +13,6 @@ void setup()
 {
     pinMode(sensorPin, INPUT);
     Serial.begin(9600);
-
 }
 
 void loop() 
@@ -19,7 +20,7 @@ void loop()
   while(sincronizador())
   {
     decodificador();
-    conversorBinChar();    
+    conversorBinChar();     
   }
 }
 
@@ -31,9 +32,10 @@ bool sincronizador()
     {
       delay(500);
       if(conversorAnalogDig()){
-        delay(500+(1000/14));
+        delay(500+(msPorBit/2));
         desligador=0;
         estadoPassado=1;
+        Serial.print('\n');
         return 1;
       }
       else{estadoPassado=0;return 0;}
@@ -44,13 +46,13 @@ bool sincronizador()
   {
     if(desligador){estadoPassado=0;return 0;}
     else{estadoPassado=1;return 1;}
+
   }
 estadoPassado=0;return 0;
 }
 bool conversorAnalogDig(){
     int sensorValue = analogRead(sensorPin);
-    int luzAmbiente = 100;
-    sensorValue = sensorValue - luzAmbiente
+    sensorValue = sensorValue - luzAmbiente;
     bool dig;
     if(sensorValue > 0 ){dig = 1;}
     if(sensorValue <= 0 ){dig = 0;}
@@ -62,16 +64,25 @@ void decodificador()
   for(int i=0;i<7;i++){
     recebido[i]=conversorAnalogDig();
     soma=soma+recebido[i];
-    delay(1000/7);    
+    delay(msPorBit);    
   }
   if(soma==0){desligador=1;}
 }
 void conversorBinChar()
 {
-  for(int i=0;i<7;i++){
-    Serial.print(recebido[i]);
+int caracterPorExtenso = 0;
+int j = 6;
+  for(int i=0; i<7; i++)
+  {
+    caracterPorExtenso = caracterPorExtenso + recebido[i]*pow(2,j);
+    j = j-1;
   }
-Serial.print('\n');
+if(caracterPorExtenso == 31){Serial.print(' ');}
+else if(caracterPorExtenso == 0){}
+else{
+  char caracter = char(caracterPorExtenso+2);
+  Serial.print(caracter);
+ }
 }
 
 void teste()
