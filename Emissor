@@ -1,4 +1,5 @@
-const int ledPin=13;
+const int ledPin=9;
+int msPorBit = 100;
 
 
 void setup() 
@@ -11,18 +12,18 @@ void setup()
 
 void loop() 
 {
-  delay(100);
+  delay(500);
   if(Serial.available()>0)
   {
     digitalWrite(ledPin, HIGH);
     delay(1000);
-    digitalWrite(ledPin, LOW);
+    //digitalWrite(ledPin, LOW);
     Serial.print("sync:\n");
   }
   while(Serial.available()>0)
   {
     int incomingChar = Serial.read();
-    if (incomingChar >64 || incomingChar == 32)
+    if ((incomingChar >47 && incomingChar <123) || incomingChar == 32)
     {
       Serial.print(incomingChar, BIN);
       Serial.print('\n');
@@ -36,8 +37,10 @@ void loop()
       {
         if(arrayLetra[i]==1){digitalWrite(ledPin, HIGH);}
         else{digitalWrite(ledPin, LOW);}
-        delay(1000/7);
+        delay(msPorBit);
       }
+      delay(3);//esse delay e necessario pois o processamento 
+      //do emissor e 3ms mais rapido que o receptor por caracter
       digitalWrite(ledPin, LOW);
     }
   }
