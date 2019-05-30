@@ -1,5 +1,5 @@
-const int ledPin=9;
-int msPorBit = 100;
+const int ledPin=10;
+int msPorBit = 40;
 
 
 void setup() 
@@ -16,8 +16,7 @@ void loop()
   if(Serial.available()>0)
   {
     digitalWrite(ledPin, HIGH);
-    delay(1000);
-    //digitalWrite(ledPin, LOW);
+    delay(1010);
     Serial.print("sync:\n");
   }
   while(Serial.available()>0)
