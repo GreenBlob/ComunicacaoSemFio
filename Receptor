@@ -1,7 +1,7 @@
 const int sensorPin = A0;
 bool desligador=1, estadoPassado=0, recebido[7];
-int msPorBit = 100;
-int luzAmbiente = 140;
+int msPorBit = 40;
+int luzAmbiente = 400;
 
 bool sincronizador();
 bool conversorAnalogDig();
@@ -11,12 +11,14 @@ void teste();
 
 void setup() 
 {
+
     pinMode(sensorPin, INPUT);
     Serial.begin(9600);
 }
 
 void loop() 
-{
+{ 
+
   while(sincronizador())
   {
     decodificador();
